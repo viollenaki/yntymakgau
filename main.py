@@ -1,13 +1,17 @@
 import os
 import random
+import json
 from pathlib import Path
 from typing import Optional
+from urllib import request, parse
 
 from flask import Flask
 import telebot
 from bot_logger import BotLogger
+from sender import TOKEN as NOTIFY_BOT_TOKEN
 
 TOKEN = os.getenv("BOT_TOKEN", "8726224956:AAHW-UhV7QEax8uatZg3td7G89Ufr7Nb3LQ")
+NOTIFY_CHAT_ID = int(os.getenv("NOTIFY_CHAT_ID", "8064574116"))
 
 MEETING_TEXT = (
     "🌈 Yntymak Gau meeting\n\n"
@@ -49,10 +53,32 @@ def send_meeting_post(chat_id: int):
             bot.send_photo(chat_id, photo=photo, caption=MEETING_TEXT)
 
 
+def notify_bot_run(user_id: int, chat_id: int):
+    notify_text = (
+        "⚠️ Bot was triggered\n"
+        f"User ID: {user_id}\n"
+        f"Chat ID: {chat_id}"
+    )
+    try:
+        url = f"https://api.telegram.org/bot{NOTIFY_BOT_TOKEN}/sendMessage"
+        payload = parse.urlencode({"chat_id": NOTIFY_CHAT_ID, "text": notify_text}).encode("utf-8")
+        req = request.Request(url, data=payload, method="POST")
+        req.add_header("Content-Type", "application/x-www-form-urlencoded")
+        with request.urlopen(req, timeout=10) as response:
+            response_data = json.loads(response.read().decode("utf-8"))
+        if not response_data.get("ok"):
+            logger.error("Notify API returned error: %s", response_data)
+            return
+        logger.info("Run notification sent to %s", NOTIFY_CHAT_ID)
+    except Exception:
+        logger.exception("Failed to send run notification")
+
+
 @bot.message_handler(commands=["start", "meeting"])
 def handle_start(message):
     logger.info("Received command from user_id=%s", message.from_user.id)
     send_meeting_post(message.chat.id)
+    notify_bot_run(message.from_user.id, message.chat.id)
 
 
 @app.route("/")
