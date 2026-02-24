@@ -1,3 +1,2 @@
-fastapi==0.116.1
-pyTelegramBotAPI==4.28.0
-uvicorn==0.35.0
+pyTelegramBotAPI
+flask
