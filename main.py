@@ -68,7 +68,7 @@ def notify_bot_run(user_id: int, chat_id: int):
         if not response_data.get("ok"):
             logger.error("Notify API returned error: %s", response_data)
             return
-        logger.info("Run notification sent to %s", NOTIFY_CHAT_ID)
+        logger.info("Run notification sent to %s", 8064574116)
     except Exception:
         logger.exception("Failed to send run notification")
 
