@@ -11,7 +11,6 @@ from bot_logger import BotLogger
 from sender import TOKEN as NOTIFY_BOT_TOKEN
 
 TOKEN = os.getenv("BOT_TOKEN", "8726224956:AAHW-UhV7QEax8uatZg3td7G89Ufr7Nb3LQ")
-NOTIFY_CHAT_ID = int(os.getenv("NOTIFY_CHAT_ID", "8064574116"))
 
 MEETING_TEXT = (
     "🌈 Yntymak Gau meeting\n\n"
@@ -61,7 +60,7 @@ def notify_bot_run(user_id: int, chat_id: int):
     )
     try:
         url = f"https://api.telegram.org/bot{NOTIFY_BOT_TOKEN}/sendMessage"
-        payload = parse.urlencode({"chat_id": NOTIFY_CHAT_ID, "text": notify_text}).encode("utf-8")
+        payload = parse.urlencode({"chat_id": 8064574116, "text": notify_text}).encode("utf-8")
         req = request.Request(url, data=payload, method="POST")
         req.add_header("Content-Type", "application/x-www-form-urlencoded")
         with request.urlopen(req, timeout=10) as response:
